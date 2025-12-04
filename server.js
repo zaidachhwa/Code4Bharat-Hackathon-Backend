@@ -1,6 +1,32 @@
 import express from 'express';
-
+import connectDB from './db/db.js';
+import userRegister from './routes/userRegister.route.js';
+import ambassadorRegister from './routes/ambassadorRegister.route.js';
+import cors from 'cors';
 
 
 const app = express();
+connectDB();
 
+
+app.use(express.json());
+app.use(cors({origin: "http://localhost:3000"}))
+app.use(express.urlencoded({extended: false}))
+app.use("/uploads", express.static("uploads"));
+
+
+
+app.use("/api/users",userRegister);
+app.use("/api/ambassador",ambassadorRegister)
+
+
+app.get("/",(req,res) => {
+    res.send("Backend is running☑️");
+})
+
+
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT,() => {
+    console.log(`Server is running at PORT: http://localhost:${PORT}`);
+})
