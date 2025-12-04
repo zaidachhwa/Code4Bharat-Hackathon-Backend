@@ -2,10 +2,14 @@ import express from 'express';
 import connectDB from './db/db.js';
 import userRegister from './routes/userRegister.route.js';
 import ambassadorRegister from './routes/ambassadorRegister.route.js';
+import adminLogin from './routes/adminLogin.route.js';
 import cors from 'cors';
+import dotenv from "dotenv";
+
 
 
 const app = express();
+dotenv.config();
 connectDB();
 
 
@@ -18,6 +22,7 @@ app.use("/uploads", express.static("uploads"));
 
 app.use("/api/users",userRegister);
 app.use("/api/ambassador",ambassadorRegister)
+app.use("/api/admin",adminLogin)
 
 
 app.get("/",(req,res) => {
