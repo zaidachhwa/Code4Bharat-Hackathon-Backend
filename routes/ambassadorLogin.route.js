@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 
-router.post("/login", ambassadorLogin);
+router.post("/api/ambassador/login", ambassadorLogin);
 
 
 

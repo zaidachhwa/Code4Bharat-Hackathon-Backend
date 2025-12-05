@@ -10,7 +10,7 @@ const CampusAmbassadorSchema = new mongoose.Schema(
     courseYear: { type: String, required: true },
     city: { type: String, required: true },
     gender: { type: String, enum: ["male", "female", "prefer-not-to-say"], required: true },
-    password: { type: String, required: true, select: false },
+    password: { type: String, required: true,  },
 
     // Social Presence
     instagram: { type: String, required: true },

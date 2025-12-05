@@ -5,7 +5,7 @@ import ambassadorRegister from "../controllers/ambassadorRegister.controller.js"
 const router = express.Router();
 
 router.post(
-  "/register",
+  "/api/ambassadors/register",
   upload.fields([
     { name: "profilePhoto", maxCount: 1 },
     { name: "studentIdCard", maxCount: 1 },
