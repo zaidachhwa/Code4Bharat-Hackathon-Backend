@@ -1,4 +1,5 @@
-import Ambassador from "../Models/ambassador.model.js";  // <-- Make sure path is correct
+import Ambassador from "../Models/ambassador.model.js";
+import bcrypt from "bcrypt";
 
 const ambassadorRegister = async (req, res) => {
   try {
@@ -14,23 +15,18 @@ const ambassadorRegister = async (req, res) => {
       }
     };
 
-    // Prepare formatted data
     const parsedData = {
       ...req.body,
       skills: safeParse(req.body.skills),
       responsibilities: safeParse(req.body.responsibilities),
-
-      // Files
       profilePhoto: req.files?.profilePhoto?.[0]?.filename || null,
       studentIdCard: req.files?.studentIdCard?.[0]?.filename || null,
-
-      // Convert string "true" to boolean
       agreement: req.body.agreement === "true" || req.body.agreement === true,
     };
 
     console.log("📌 FINAL DATA FOR DB:", parsedData);
 
-    // Check if email already exists (optional but recommended)
+    // Check duplicate email
     const existingUser = await Ambassador.findOne({ email: parsedData.email });
 
     if (existingUser) {
@@ -40,7 +36,12 @@ const ambassadorRegister = async (req, res) => {
       });
     }
 
-    // Save into MongoDB
+    // 👇 HASH PASSWORD
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(parsedData.password, salt);
+    parsedData.password = hashedPassword;
+
+    // Save to DB
     const newUser = await Ambassador.create(parsedData);
 
     return res.status(201).json({

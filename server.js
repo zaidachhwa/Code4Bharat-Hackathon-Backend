@@ -5,6 +5,8 @@ import ambassadorRegister from './routes/ambassadorRegister.route.js';
 import adminLogin from './routes/adminLogin.route.js';
 import cors from 'cors';
 import dotenv from "dotenv";
+import getAmbassadors from './routes/getAmbassadors.route.js';
+import ambassadorLogin from './routes/ambassadorLogin.route.js';
 
 
 
@@ -23,6 +25,8 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/users",userRegister);
 app.use("/api/ambassador",ambassadorRegister)
 app.use("/api/admin",adminLogin)
+app.use("/api/ambassadors", getAmbassadors);
+app.use("/api/ambassador", ambassadorLogin);
 
 
 app.get("/",(req,res) => {

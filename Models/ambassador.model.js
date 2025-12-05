@@ -40,11 +40,11 @@ const CampusAmbassadorSchema = new mongoose.Schema(
     agreement: { type: Boolean, required: true },
 
 
-    // isApproved: { type: Boolean, default: false },
+    isApproved: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
 // Prevent model overwrite in dev
 export default mongoose.models.CampusAmbassador ||
-  mongoose.model("CampusAmbassador", CampusAmbassadorSchema);
+  mongoose.model("ambassador", CampusAmbassadorSchema);
