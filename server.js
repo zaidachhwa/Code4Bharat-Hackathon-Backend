@@ -9,7 +9,6 @@ import getAmbassadors from './routes/getAmbassadors.route.js';
 import ambassadorLogin from './routes/ambassadorLogin.route.js';
 
 
-
 const app = express();
 dotenv.config();
 connectDB();
