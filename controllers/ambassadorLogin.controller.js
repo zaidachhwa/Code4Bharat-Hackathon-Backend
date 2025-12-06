@@ -52,6 +52,7 @@ const ambassadorLogin = async (req, res) => {
         message: "Your application is under review. Admin approval required.",
       });
     }
+    ""
 
     // 5️⃣ Generate JWT
     const token = jwt.sign(
