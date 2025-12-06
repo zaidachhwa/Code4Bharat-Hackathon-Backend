@@ -8,6 +8,8 @@ dotenv.config();
 const ambassadorLogin = async (req, res) => {
   const { email, password } = req.body;
 
+  const domain = process.env.DOMAIN;
+
   console.log("===== Ambassador Login Request =====");
   console.log("Request body:", req.body);
 
@@ -52,7 +54,7 @@ const ambassadorLogin = async (req, res) => {
         message: "Your application is under review. Admin approval required.",
       });
     }
-    ""
+    
 
     // 5️⃣ Generate JWT
     const token = jwt.sign(
