@@ -2,6 +2,7 @@ import express from "express";
 import upload from "../middlewares/upload.js";
 import ambassadorStep1FormData from "../controllers/ambassadorStep1FormData.controller.js";
 import getPromotionData from "../controllers/ambassadorPromotionData.controller.js";
+import ambassadorStep1Day2Data from "../controllers/ambassadorStep1Day2Data.controller.js";
 
 
 const router = express.Router();
@@ -17,7 +18,7 @@ router.post(
 router.post(
   "/api/step1/day2/uploads",
   upload.array("screenshots", 10),
-  ambassadorStep1FormData
+  ambassadorStep1Day2Data
 );
 
 
