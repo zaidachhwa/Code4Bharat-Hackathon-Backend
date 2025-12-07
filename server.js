@@ -5,8 +5,11 @@ import ambassadorRegister from './routes/ambassadorRegister.route.js';
 import adminLogin from './routes/adminLogin.route.js';
 import cors from 'cors';
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import getAmbassadors from './routes/getAmbassadors.route.js';
 import ambassadorLogin from './routes/ambassadorLogin.route.js';
+import ambassadorStep1FormData from './routes/ambassadorStep1FormData.route.js';
+
 
 
 const app = express();
@@ -14,6 +17,7 @@ dotenv.config();
 connectDB();
 
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
     origin: "http://localhost:3000",
@@ -26,9 +30,11 @@ app.use("/uploads", express.static("uploads"));
 
 app.use("/api/users", userRegister);
 app.use("/api/admin", adminLogin)
+
 app.use(getAmbassadors);
 app.use(ambassadorRegister)
 app.use(ambassadorLogin);
+app.use(ambassadorStep1FormData)
 
 
 app.get("/", (req, res) => {
