@@ -1,40 +1,28 @@
 import jwt from "jsonwebtoken";
-import ambassador from "../Models/task.model.js";
+import ambassadorTask from "../Models/task.model.js";
 
-
-
-const ambassadorStep1FormData = async(req, res) => {
+const ambassadorStep1FormData = async (req, res) => {
   try {
     console.log("📩 STEP 1 DATA RECEIVED");
 
-    // 1️⃣ Get token from cookies
+    // 1️⃣ Token
     const token = req.cookies?.token;
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized - No token found"
-      });
+      return res.status(401).json({ success: false, message: "Unauthorized - No token found" });
     }
 
-    // 2️⃣ Decode jwt token
+    // 2️⃣ Decode Token
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid token"
-      });
+    } catch {
+      return res.status(401).json({ success: false, message: "Invalid token" });
     }
 
-    const ambassadorId = decoded.ambassadorId; // secure source
+    const ambassadorId = decoded.ambassadorId;
 
-    // 3️⃣ Extract form data
+    // 3️⃣ Body + Files validation
     const { day1Confirmed } = req.body;
-
-    console.log("Body:", req.body);
-    console.log("Files:", req.files);
-    console.log("Decoded AmbassadorId:", ambassadorId);
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
@@ -43,10 +31,41 @@ const ambassadorStep1FormData = async(req, res) => {
       });
     }
 
-    // 4️⃣ Response (later will insert DB)
+    const uploadedImages = req.files.map(f => f.filename);
 
+    // 4️⃣ Check if Task Exists
+    let task = await ambassadorTask.findOne({ ambassadorId });
 
+    if (!task) {
+      console.log("🆕 No record found — creating new task");
 
+      task = new ambassadorTask({
+        ambassadorId,
+        promotion: {
+          screenshots: { day1: uploadedImages, day2: [] },
+          day1Confirmed: day1Confirmed || false,
+          submittedAt: new Date(),
+          status: "pending"
+        },
+        currentStep: 1
+      });
+
+      await task.save();
+    } else {
+      console.log("♻ Updating existing task");
+
+      // push images instead of replacing
+      const existingImages = task.promotion?.screenshots?.day1 || [];
+      const updatedImages = [...existingImages, ...uploadedImages];
+
+      task.promotion.screenshots.day1 = updatedImages;
+      task.promotion.day1Confirmed = Boolean(day1Confirmed);
+      task.promotion.submittedAt = new Date();
+      task.promotion.status = "pending"; // admin will review
+
+      // Save update
+      await task.save();
+    }
 
     return res.status(200).json({
       success: true,
@@ -54,7 +73,7 @@ const ambassadorStep1FormData = async(req, res) => {
       data: {
         ambassadorId,
         day1Confirmed,
-        uploadedFiles: req.files.map(f => f.filename)
+        uploadedFiles: uploadedImages
       }
     });
 
