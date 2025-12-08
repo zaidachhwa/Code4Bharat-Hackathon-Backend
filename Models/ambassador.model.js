@@ -37,6 +37,8 @@ const CampusAmbassadorSchema = new mongoose.Schema(
 
     additionalInfo: { type: String, default: "" },
 
+    photos: { type: [String], default: [] },
+
     agreement: { type: Boolean, required: true },
 
 
