@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import getAmbassadors from './routes/getAmbassadors.route.js';
 import ambassadorLogin from './routes/ambassadorLogin.route.js';
 import ambassadorStep1FormData from './routes/ambassadorStep1FormData.route.js';
+import ambassadorStep2FormData from './routes/ambassadorStep2FormData.route.js';
 
 
 
@@ -34,7 +35,8 @@ app.use("/api/admin", adminLogin)
 app.use(getAmbassadors);
 app.use(ambassadorRegister)
 app.use(ambassadorLogin);
-app.use(ambassadorStep1FormData)
+app.use(ambassadorStep1FormData);
+app.use(ambassadorStep2FormData);
 
 
 app.get("/", (req, res) => {
