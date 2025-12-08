@@ -37,12 +37,13 @@ app.use("/api/admin", adminLogin)
 app.use(getAmbassadors);
 app.use(ambassadorRegister)
 app.use(ambassadorLogin);
-app.use(ambassadorStep1FormData);
-app.use(ambassadorStep2FormData);
+
 app.use(ambassadorStep3);
 app.use(ambassadorDashboard);
 
 
+app.use("/api/step1/day1", ambassadorStep1FormData);
+app.use("/api/step1/day2", ambassadorStep2FormData);
 
 
 app.get("/", (req, res) => {
