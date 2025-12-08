@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken";
 import ambassadorTask from "../Models/task.model.js";
 
-const ambassadorStep1FormData = async (req, res) => {
+const ambassadorStep1Day1Data = async (req, res) => {
   try {
-    console.log("📩 STEP 1 DATA RECEIVED");
-
+    
     // 1️⃣ Token
     const token = req.cookies?.token;
     if (!token) {
@@ -86,4 +85,33 @@ const ambassadorStep1FormData = async (req, res) => {
   }
 };
 
-export default ambassadorStep1FormData;
+
+// GET IMAGES FOR A PARTICULAR AMBASSADOR (ADMIN)
+
+const admin = async (req, res) => {
+  try {
+    const { ambassadorId } = req.params;
+
+    const task = await ambassadorTask.findOne({ ambassadorId })
+      .select("ambassadorId promotion")
+      .populate("ambassadorId", "fullName email");
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "No uploads found for this ambassador",
+      });
+    }
+
+    return res.status(200).json({
+      // success: true,
+      data: task.promotion.screenshots.day1,
+    });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+export default {ambassadorStep1Day1Data, admin};
