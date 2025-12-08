@@ -10,6 +10,8 @@ import getAmbassadors from './routes/getAmbassadors.route.js';
 import ambassadorLogin from './routes/ambassadorLogin.route.js';
 import ambassadorStep1FormData from './routes/ambassadorStep1FormData.route.js';
 import ambassadorStep2FormData from './routes/ambassadorStep2FormData.route.js';
+import ambassadorStep3 from './routes/ambassadorStep3.route.js';
+import ambassadorDashboard from './routes/ambassadorDashboard.route.js';
 
 
 
@@ -37,6 +39,10 @@ app.use(ambassadorRegister)
 app.use(ambassadorLogin);
 app.use(ambassadorStep1FormData);
 app.use(ambassadorStep2FormData);
+app.use(ambassadorStep3);
+app.use(ambassadorDashboard);
+
+
 
 
 app.get("/", (req, res) => {

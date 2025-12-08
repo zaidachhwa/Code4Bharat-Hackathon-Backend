@@ -44,6 +44,9 @@ const ambassadorStep2FormData = async (req, res) => {
       status: "pending", // ⛔ FIXED
     };
 
+    task.currentStep = 3;
+
+
     await task.save();
 
     return res.status(200).json({

@@ -3,7 +3,7 @@ import AmbassadorTaskModel from "../Models/task.model.js";
 
 const getPromotionData = async (req, res) => {
   try {
-    console.log("📌 Get Promotion Data Controller Running...");
+    // console.log("📌 Get Promotion Data Controller Running...");
 
     // 1 Check Token
     const token = req.cookies?.token;
