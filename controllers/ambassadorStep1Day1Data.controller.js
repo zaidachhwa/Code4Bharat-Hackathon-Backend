@@ -114,4 +114,4 @@ const admin = async (req, res) => {
 };
 
 
-export default {ambassadorStep1Day1Data, admin};
+export { ambassadorStep1Day1Data, admin };

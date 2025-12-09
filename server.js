@@ -12,6 +12,7 @@ import ambassadorStep1FormData from './routes/ambassadorStep1FormData.route.js';
 import ambassadorStep2FormData from './routes/ambassadorStep2FormData.route.js';
 import ambassadorStep3 from './routes/ambassadorStep3.route.js';
 import ambassadorDashboard from './routes/ambassadorDashboard.route.js';
+import ambassadorCouponCodeUsers from './routes/ambassadorCouponCodeUsers.route.js';
 
 
 
@@ -42,8 +43,9 @@ app.use(ambassadorStep3);
 app.use(ambassadorDashboard);
 
 
-app.use("/api/step1/day1", ambassadorStep1FormData);
-app.use("/api/step1/day2", ambassadorStep2FormData);
+app.use(ambassadorStep1FormData);
+app.use(ambassadorStep2FormData);
+app.use(ambassadorCouponCodeUsers);
 
 
 app.get("/", (req, res) => {

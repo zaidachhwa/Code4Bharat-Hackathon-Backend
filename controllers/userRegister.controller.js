@@ -14,8 +14,10 @@ const userRegister = async (req, res) => {
       });
     }
 
-    // Check if user already exists
-    const emailExists = await User.findOne({ email: userData.email });
+    const { email, username, couponCode } = userData;
+
+    // Check if user email already exists
+    const emailExists = await User.findOne({ email });
     if (emailExists) {
       return res.status(400).json({
         success: false,
@@ -23,7 +25,8 @@ const userRegister = async (req, res) => {
       });
     }
 
-    const usernameExists = await User.findOne({ username: userData.username });
+    // Check if username exists
+    const usernameExists = await User.findOne({ username });
     if (usernameExists) {
       return res.status(400).json({
         success: false,
@@ -31,34 +34,47 @@ const userRegister = async (req, res) => {
       });
     }
 
-    // Save user
-    const newUser = await User.create(userData);
-    console.log("✔ User Stored In DB");
+    // If coupon code is empty, set null
+    const cleanedData = {
+      ...userData,
+      couponCode: couponCode && couponCode.trim() !== "" ? couponCode.trim() : null,
+    };
 
-    // Send welcome email
+    // Save user to MongoDB
+    const newUser = await User.create(cleanedData);
+    console.log("✔ User stored successfully");
+
+    // Send Welcome Email
     await sendEmail({
-      to: userData.email,
+      to: email,
       subject: "🎉 Welcome to Code4Bharat Hackathon!",
       html: `
         <h2>Hey ${userData.fullName} 👋</h2>
-        <p>🎉 Thank you for registering for the <strong>Code4Bharat Hackathon</strong>!</p>
-        <p>We’re excited to have you onboard — stay tuned for updates.</p>
+        <p>🎉 Thank you for registering for <strong>Code4Bharat Hackathon</strong>!</p>
+        
+        ${
+          cleanedData.couponCode
+            ? `<p>🎁 You used a referral code: <strong>${cleanedData.couponCode}</strong></p>`
+            : ""
+        }
+
+        <p>We’ll share updates soon — stay tuned!</p>
         <br/>
-        <p>🚀 Best Regards,<br>Team Code4Bharat</p>
+        <p>🚀 Regards,<br>Team Code4Bharat</p>
       `,
     });
 
-    console.log("📧 Welcome Email Sent!");
+    console.log("📧 Welcome Email Sent");
 
     return res.status(201).json({
       success: true,
-      message: "User registered & email sent successfully",
+      message: "User registered successfully",
       data: newUser,
     });
 
   } catch (error) {
     console.error("❌ Server Error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Something went wrong",
       error: error.message,

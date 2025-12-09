@@ -61,6 +61,10 @@ const userSchema = new mongoose.Schema(
     skills: {
       type: String,
     },
+    couponCode: {   // ✅ Added
+  type: String,
+  default: null,
+  },
     agreeTerms: {
       type: Boolean,
       required: true,
