@@ -8,17 +8,14 @@ dotenv.config();
 const ambassadorLogin = async (req, res) => {
   const { email, password } = req.body;
 
-  const domain = process.env.DOMAIN;
-
   console.log("===== Ambassador Login Request =====");
   console.log("Request body:", req.body);
 
   try {
-    // 1️⃣ Check email exists
+    // 1️⃣ Find ambassador
     const ambassador = await Ambassador.findOne({ email });
 
-    console.log(ambassador)
-    console.log("password from backend:",ambassador.password)
+    // ❗ FIX 1: If ambassador is null → return before accessing ambassador.password
     if (!ambassador) {
       return res.status(400).json({
         success: false,
@@ -26,18 +23,20 @@ const ambassadorLogin = async (req, res) => {
       });
     }
 
+    // Safe to log now (ambassador exists)
     console.log("Ambassador found:", ambassador.email);
 
-    console.log("Stored hashed password:", ambassador.password);
-    // 2️⃣ Check if password exists in DB
+    // ❗ FIX 2: Some DB users have password = null → handle safely
     if (!ambassador.password) {
-      return res.status(500).json({
+      return res.status(400).json({
         success: false,
-        message: "Account error: password missing. Please re-register.",
+        message: "Invalid email or password",
       });
     }
 
-    // 3️⃣ Validate password
+    console.log("Stored hashed password:", ambassador.password);
+
+    // 2️⃣ Compare password
     const isMatch = await bcrypt.compare(password, ambassador.password);
 
     if (!isMatch) {
@@ -47,16 +46,15 @@ const ambassadorLogin = async (req, res) => {
       });
     }
 
-    // 4️⃣ Check approval status
+    // 3️⃣ Check approval
     if (!ambassador.isApproved) {
       return res.status(403).json({
         success: false,
         message: "Your application is under review. Admin approval required.",
       });
     }
-    
 
-    // 5️⃣ Generate JWT
+    // 4️⃣ Generate JWT
     const token = jwt.sign(
       {
         ambassadorId: ambassador._id,
@@ -66,10 +64,10 @@ const ambassadorLogin = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // 6️⃣ Store cookie
+    // 5️⃣ Set cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,  // true in production
+      secure: false,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
