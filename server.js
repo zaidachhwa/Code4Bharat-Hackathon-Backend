@@ -13,6 +13,7 @@ import ambassadorStep2FormData from './routes/ambassadorStep2FormData.route.js';
 import ambassadorStep3 from './routes/ambassadorStep3.route.js';
 import ambassadorDashboard from './routes/ambassadorDashboard.route.js';
 import ambassadorCouponCodeUsers from './routes/ambassadorCouponCodeUsers.route.js';
+import imagesOfPromotionAndSeminar from './routes/imagesOfPromotionAndSeminar.route.js';
 
 
 
@@ -46,6 +47,7 @@ app.use(ambassadorDashboard);
 app.use(ambassadorStep1FormData);
 app.use(ambassadorStep2FormData);
 app.use(ambassadorCouponCodeUsers);
+app.use(imagesOfPromotionAndSeminar);
 
 
 app.get("/", (req, res) => {

@@ -29,13 +29,16 @@ const ambassadorCreatedTime = async (req, res) => {
     }
 
     // 4️⃣ Extract seminar submit time (fallback if null)
-    const seminarCreatedTime = task.seminar?.submittedAt || task.createdAt;
+    const seminarCreatedTime = task.seminar?.submittedAt; 
+
 
     return res.status(200).json({
-      success: true,
-      message: "Seminar creation time fetched",
-      createdTime: seminarCreatedTime,
-    });
+  success: true,
+  message: "Seminar creation time fetched",
+  seminarSubmitted: Boolean(task.seminar?.submittedAt),
+  createdTime: task.seminar?.submittedAt || null,
+});
+
 
   } catch (error) {
     console.error("❌ Error fetching creation time:", error);
