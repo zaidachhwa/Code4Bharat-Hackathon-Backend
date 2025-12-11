@@ -13,23 +13,15 @@ const registration = async (req, res) => {
       socialPresence,
     } = req.body;
 
-    // 1️⃣ Basic manual validation (optional – frontend already validates)
-    if (
-      !fullName ||
-      !email ||
-      !phone ||
-      !collegeYear ||
-      !domain ||
-      !github ||
-      !linkedin
-    ) {
+    // 1️⃣ Basic required fields (GitHub, LinkedIn, SocialPresence are OPTIONAL now)
+    if (!fullName || !email || !phone || !collegeYear || !domain) {
       return res.status(400).json({
         success: false,
         message: "All required fields must be filled.",
       });
     }
 
-    // 2️⃣ Optional: Check duplicate registration
+    // 2️⃣ Check duplicate registration
     const existing = await registrationModel.findOne({ email });
     if (existing) {
       return res.status(409).json({
@@ -45,17 +37,18 @@ const registration = async (req, res) => {
       phone,
       collegeYear,
       domain,
-      github,
-      linkedin,
-      socialPresence,
+      github: github || "",            // optional
+      linkedin: linkedin || "",        // optional
+      socialPresence: socialPresence || "", // optional
     });
 
-    // 4️⃣ Respond to frontend
+    // 4️⃣ Respond
     return res.status(201).json({
       success: true,
       message: "Registration successful!",
       data: newEntry,
     });
+
   } catch (error) {
     console.error("❌ Error saving registration:", error);
 

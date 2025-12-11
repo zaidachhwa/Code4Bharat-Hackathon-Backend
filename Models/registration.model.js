@@ -32,21 +32,24 @@ const registrationSchema = new mongoose.Schema(
     domain: {
       type: String,
       required: true,
-      enum: ["DSA", "Web Development", "MySQL"], // Same as your dropdown
+      enum: ["DSA", "Web Development", "MySQL"],
     },
 
+    // ⭐ NOT REQUIRED ANYMORE
     github: {
       type: String,
-      required: true,
       trim: true,
+      default: "",
     },
 
+    // ⭐ NOT REQUIRED ANYMORE
     linkedin: {
       type: String,
-      required: true,
       trim: true,
+      default: "",
     },
 
+    // ⭐ Already optional
     socialPresence: {
       type: String,
       trim: true,
