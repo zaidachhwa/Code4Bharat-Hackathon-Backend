@@ -34,18 +34,20 @@ const ambassadorCouponCodeUser = async (req, res) => {
       });
     }
 
-    // 3️⃣ Find ambassador task
-    const task = await ambassadorTask.findOne({ ambassadorId });
+    // 3️⃣ Find OR Create ambassador task (SAFE UPSERT)
+    let task = await ambassadorTask.findOne({ ambassadorId });
 
     if (!task) {
-      return res.status(404).json({
-        success: false,
-        message: "Ambassador task record not found",
-      });
+      try {
+        task = await ambassadorTask.create({ ambassadorId });
+      } catch (err) {
+        // If another parallel request created it → fetch again
+        task = await ambassadorTask.findOne({ ambassadorId });
+      }
     }
 
-    // 4️⃣ Get seminar coupon
-    const couponCode = task.seminar?.couponCode;
+    // 4️⃣ Get coupon from seminar
+    const couponCode = task?.seminar?.couponCode;
 
     if (!couponCode) {
       return res.status(200).json({

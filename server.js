@@ -15,19 +15,28 @@ import ambassadorDashboard from "./routes/ambassadorDashboard.route.js";
 import ambassadorCouponCodeUsers from "./routes/ambassadorCouponCodeUsers.route.js";
 import imagesOfPromotionAndSeminar from "./routes/imagesOfPromotionAndSeminar.route.js";
 import registration from "./routes/registration.route.js";
+import ambassadorSteps from "./routes/ambassadorSteps.route.js";
+
+dotenv.config();
+
+
 
 const app = express();
-dotenv.config();
 connectDB();
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.DOMAIN,
+    origin: process.env.DOMAIN || "http://localhost:3000",
     credentials: true,
   })
 );
+
+app.use("/test", (req,res) =>{
+  res.send("Backend Connected☑️")
+})
+
 app.use(express.urlencoded({ extended: false }));
 app.use("/uploads", express.static("uploads"));
 
@@ -45,12 +54,10 @@ app.use(ambassadorStep1FormData);
 app.use(ambassadorStep2FormData);
 app.use(ambassadorCouponCodeUsers);
 app.use(imagesOfPromotionAndSeminar);
+app.use(ambassadorSteps)
+
 
 app.use(registration);
-
-app.get("/", (req, res) => {
-  res.send("Backend is running☑️");
-});
 
 const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => {
