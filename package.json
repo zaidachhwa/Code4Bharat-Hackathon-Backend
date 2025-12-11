@@ -11,6 +11,7 @@
     "url": "git+https://github.com/zaidachhwa/Code4Bharat-Hackathon-Backend.git"
   },
   "keywords": [],
+  "type": "module",
   "author": "",
   "license": "ISC",
   "bugs": {
