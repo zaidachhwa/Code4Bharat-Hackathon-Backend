@@ -16,4 +16,4 @@ const registrationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Registration", registrationSchema);
+export const Registration = mongoose.model("Registration", registrationSchema);
