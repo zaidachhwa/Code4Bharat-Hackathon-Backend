@@ -1,5 +1,5 @@
 import express from "express";
-import jwtAuth from "../controllers/jwtAuth.controller";
+import jwtAuth from "../controllers/jwtAuth.controller.js";
 
 
 const router  = express.Router();
