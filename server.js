@@ -15,9 +15,11 @@ import ambassadorDashboard from "./routes/ambassadorDashboard.route.js";
 import ambassadorCouponCodeUsers from "./routes/ambassadorCouponCodeUsers.route.js";
 import imagesOfPromotionAndSeminar from "./routes/imagesOfPromotionAndSeminar.route.js";
 import registration from "./routes/registration.route.js";
+import ambassadorSteps from "./routes/ambassadorSteps.route.js";
+
+dotenv.config();
 
 const app = express();
-dotenv.config();
 connectDB();
 
 app.use(cookieParser());
@@ -28,6 +30,11 @@ app.use(
     credentials: true,
   })
 );
+
+app.use("/test", (req, res) => {
+  res.send("Backend Connected☑️");
+});
+
 app.use(express.urlencoded({ extended: false }));
 app.use("/uploads", express.static("uploads"));
 
@@ -45,6 +52,7 @@ app.use(ambassadorStep1FormData);
 app.use(ambassadorStep2FormData);
 app.use(ambassadorCouponCodeUsers);
 app.use(imagesOfPromotionAndSeminar);
+app.use(ambassadorSteps);
 
 app.use("/api", registration);
 

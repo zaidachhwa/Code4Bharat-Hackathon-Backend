@@ -5,7 +5,6 @@ const ambassadorCurrentStep = async (req, res) => {
   console.log("📌 Ambassador Current Step Controller Running...");
 
   try {
-    // 1️⃣ Check Token
     const token = req.cookies?.token;
     if (!token) {
       return res.status(401).json({
@@ -14,9 +13,8 @@ const ambassadorCurrentStep = async (req, res) => {
       });
     }
 
-    // 2️⃣ Decode Token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const ambassadorId = decoded?.ambassadorId || decoded?.id;
+    const ambassadorId = decoded?.ambassadorId;
 
     if (!ambassadorId) {
       return res.status(400).json({
@@ -25,22 +23,19 @@ const ambassadorCurrentStep = async (req, res) => {
       });
     }
 
-    // 3️⃣ Fetch Only Current Step From DB
-    const task = await ambassadorTask.findOne(
-      { ambassadorId }
-    );
+    // Check existing task
+    let task = await ambassadorTask.findOne({ ambassadorId });
 
+    // Create task if not exist
     if (!task) {
-      return res.status(404).json({
-        success: false,
-        message: "Task record not found",
+      task = await ambassadorTask.create({
+        ambassadorId,
+        currentStep: 1,
       });
     }
 
-    // 4️⃣ Respond With Step Number
     return res.status(200).json({
       success: true,
-      message: "Current step fetched successfully",
       currentStep: task.currentStep,
     });
 
