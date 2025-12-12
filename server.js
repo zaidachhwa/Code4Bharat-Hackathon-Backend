@@ -22,14 +22,31 @@ dotenv.config();
 const app = express();
 connectDB();
 
-app.use(cookieParser());
-app.use(express.json());
+const allowedOrigins = [
+  process.env.DOMAIN,
+  "http://localhost:3000",
+  "https://code4bharat.vercel.app", // hardcoded as fallback
+];
+
 app.use(
   cors({
-    origin: [process.env.DOMAIN, "http://localhost:3000"],
+    origin: (origin, callback) => {
+      console.log("Origin received:", origin);
+
+      if (!origin) return callback(null, true); // allow server-to-server
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"), false);
+    },
     credentials: true,
   })
 );
+
+app.use(cookieParser());
+app.use(express.json());
 
 app.use("/test", (req, res) => {
   res.send("Backend Connected☑️");
