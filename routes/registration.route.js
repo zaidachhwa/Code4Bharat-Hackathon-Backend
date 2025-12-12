@@ -1,14 +1,8 @@
-import registration from "../controllers/registration.controller.js";
 import express from "express";
+import registration from "../controllers/registration.controller.js";
 
+const router = express.Router();
 
-const router = express.Router()
+router.post("/registration", registration);
 
-
-router.post("/api/registration", registration);
-
-
-
-
-export default registration;
-
+export default router;

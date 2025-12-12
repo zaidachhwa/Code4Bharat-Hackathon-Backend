@@ -1,4 +1,35 @@
-import registrationModel from "../Models/registration.model.js";
+import fs from "fs";
+import path from "path";
+import Registration from "../models/registration.model.js";
+
+// Path for fallback JSON file
+const fallbackFile = path.join(process.cwd(), "fallback_registrations.json");
+
+// Function that ALWAYS logs registration into JSON file
+const saveToFallback = (data) => {
+  try {
+    let fileData = [];
+
+    // Read existing file if available
+    if (fs.existsSync(fallbackFile)) {
+      const raw = fs.readFileSync(fallbackFile, "utf-8");
+      fileData = raw ? JSON.parse(raw) : [];
+    }
+
+    // Append new record
+    fileData.push({
+      ...data,
+      savedAt: new Date(),
+    });
+
+    // Write file back
+    fs.writeFileSync(fallbackFile, JSON.stringify(fileData, null, 2));
+
+    console.log("📁 Registration saved to fallback JSON file.");
+  } catch (error) {
+    console.error("❌ Error writing fallback JSON:", error);
+  }
+};
 
 const registration = async (req, res) => {
   try {
@@ -13,55 +44,72 @@ const registration = async (req, res) => {
       socialPresence,
     } = req.body;
 
-    // 1️⃣ Basic manual validation (optional – frontend already validates)
-    if (
-      !fullName ||
-      !email ||
-      !phone ||
-      !collegeYear ||
-      !domain ||
-      !github ||
-      !linkedin
-    ) {
+    // Basic validation
+    if (!fullName || !email || !phone || !collegeYear || !domain) {
       return res.status(400).json({
         success: false,
-        message: "All required fields must be filled.",
+        message: "Please fill all required fields.",
       });
     }
 
-    // 2️⃣ Optional: Check duplicate registration
-    const existing = await registrationModel.findOne({ email });
+    // ALWAYS SAVE TO JSON FIRST (backup)
+    saveToFallback(req.body);
+
+    // Check duplicate in MongoDB
+    let existing;
+    try {
+      existing = await Registration.findOne({ email });
+    } catch (err) {
+      console.error("⚠ MongoDB lookup failed — but JSON backup is saved.");
+      return res.status(201).json({
+        success: true,
+        fallbackOnly: true,
+        message:
+          "Registration saved in JSON backup (MongoDB temporarily unavailable).",
+      });
+    }
+
     if (existing) {
       return res.status(409).json({
         success: false,
-        message: "User already registered with this email.",
+        message: "This email is already registered.",
       });
     }
 
-    // 3️⃣ Create new registration
-    const newEntry = await registrationModel.create({
-      fullName,
-      email,
-      phone,
-      collegeYear,
-      domain,
-      github,
-      linkedin,
-      socialPresence,
-    });
+    // Try saving in MongoDB
+    try {
+      const newEntry = await Registration.create({
+        fullName,
+        email,
+        phone,
+        collegeYear,
+        domain,
+        github,
+        linkedin,
+        socialPresence,
+      });
 
-    // 4️⃣ Respond to frontend
-    return res.status(201).json({
-      success: true,
-      message: "Registration successful!",
-      data: newEntry,
-    });
+      return res.status(201).json({
+        success: true,
+        message: "Registration successful!",
+        savedIn: "MongoDB + JSON",
+        data: newEntry,
+      });
+    } catch (err) {
+      console.error("⚠ MongoDB save failed — JSON backup already created.");
+      return res.status(201).json({
+        success: true,
+        fallbackOnly: true,
+        message:
+          "Registration saved in JSON backup (MongoDB temporarily unavailable).",
+      });
+    }
   } catch (error) {
-    console.error("❌ Error saving registration:", error);
+    console.error("❌ Unexpected server error:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Server error while submitting registration.",
+      message: "Unexpected server error occurred.",
     });
   }
 };

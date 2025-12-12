@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.DOMAIN,
+    origin: [process.env.DOMAIN, "http://localhost:3000"],
     credentials: true,
   })
 );
@@ -46,7 +46,7 @@ app.use(ambassadorStep2FormData);
 app.use(ambassadorCouponCodeUsers);
 app.use(imagesOfPromotionAndSeminar);
 
-app.use(registration);
+app.use("/api", registration);
 
 app.get("/", (req, res) => {
   res.send("Backend is running☑️");
