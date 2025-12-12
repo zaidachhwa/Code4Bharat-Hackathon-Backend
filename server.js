@@ -30,7 +30,10 @@ const allowedOrigins = [
   "https://code4bharat.vercel.app", // hardcoded as fallback
 ];
 
+<<<<<<< HEAD
 app.set("trust proxy", 1);
+=======
+>>>>>>> 93b64975d12751db7137cf04a738c97cbeb9a403
 app.use(
   cors({
     origin: (origin, callback) => {

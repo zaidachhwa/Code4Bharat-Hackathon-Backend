@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import Registration from "../models/registration.model.js";
+import { Registration } from "../Models/registration.model.js";
 
 // Path for fallback JSON file
 const fallbackFile = path.join(process.cwd(), "fallback_registrations.json");
