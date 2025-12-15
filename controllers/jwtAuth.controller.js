@@ -33,4 +33,48 @@ const jwtAuth = (req, res) => {
   }
 };
 
-export default jwtAuth;
+const adminAuth = (req, res) => {
+  console.log("reached at adminAuth")
+  const adminToken = req.cookies?.adminToken;
+
+  // ❌ No admin token
+  if (!adminToken) {
+    return res.status(401).json({
+      success: false,
+      isAuthenticated: false,
+      message: "Admin token not found",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(adminToken, process.env.JWT_SECRET);
+
+    // Optional safety check
+    if (decoded.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        isAuthenticated: false,
+        message: "Not an admin token",
+      });
+    }
+
+    // ✔ Admin authenticated
+    return res.status(200).json({
+      success: true,
+      isAuthenticated: true,
+      admin: {
+        email: decoded.email,
+        role: decoded.role,
+      },
+    });
+
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      isAuthenticated: false,
+      message: "Invalid or expired admin token",
+    });
+  }
+};
+
+export {adminAuth,jwtAuth};

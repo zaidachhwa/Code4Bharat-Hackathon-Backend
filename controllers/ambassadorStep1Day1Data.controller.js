@@ -3,8 +3,9 @@ import ambassadorTask from "../Models/task.model.js";
 
 const ambassadorStep1Day1Data = async (req, res) => {
   try {
-    
+
     // 1️⃣ Token
+    console.log("files:", req.files)
     const token = req.cookies?.token;
     if (!token) {
       return res.status(401).json({ success: false, message: "Unauthorized - No token found" });
@@ -30,7 +31,10 @@ const ambassadorStep1Day1Data = async (req, res) => {
       });
     }
 
-    const uploadedImages = req.files.map(f => f.filename);
+    const uploadedImages = req.files.map(f =>
+      f.path.replace(/\\/g, "/")
+    );
+
 
     // 4️⃣ Check if Task Exists
     let task = await ambassadorTask.findOne({ ambassadorId });

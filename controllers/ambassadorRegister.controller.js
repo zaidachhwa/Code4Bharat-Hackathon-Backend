@@ -19,8 +19,14 @@ const ambassadorRegister = async (req, res) => {
       ...req.body,
       skills: safeParse(req.body.skills),
       responsibilities: safeParse(req.body.responsibilities),
-      profilePhoto: req.files?.profilePhoto?.[0]?.filename || null,
-      studentIdCard: req.files?.studentIdCard?.[0]?.filename || null,
+      profilePhoto: req.files?.profilePhoto?.[0]
+        ? req.files.profilePhoto[0].path.replace(/\\/g, "/")
+        : null,
+
+      studentIdCard: req.files?.studentIdCard?.[0]
+        ? req.files.studentIdCard[0].path.replace(/\\/g, "/")
+        : null,
+
       agreement: req.body.agreement === "true" || req.body.agreement === true,
     };
 

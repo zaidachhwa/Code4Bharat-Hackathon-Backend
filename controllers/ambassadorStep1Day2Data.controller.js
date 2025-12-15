@@ -38,7 +38,10 @@ const ambassadorStep1Day2Data = async (req, res) => {
       });
     }
 
-    const uploadedFiles = req.files.map((file) => file.filename);
+    const uploadedFiles = req.files.map((file) =>
+      file.path.replace(/\\/g, "/")
+    );
+
 
     // 3️⃣ Find Existing Task
     let task = await ambassadorTask.findOne({ ambassadorId });

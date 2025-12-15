@@ -1,5 +1,5 @@
 import express from "express";
-import jwtAuth from "../controllers/jwtAuth.controller.js";
+import {adminAuth,jwtAuth} from "../controllers/jwtAuth.controller.js";
 
 
 const router  = express.Router();
@@ -7,6 +7,8 @@ const router  = express.Router();
 
 
 router.get("/api/jwtauth/checking", jwtAuth);
+
+router.get("/api/admin/auth", adminAuth);
 
 
 
