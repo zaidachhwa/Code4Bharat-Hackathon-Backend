@@ -1,5 +1,6 @@
 import express from "express";
 import AmbassadorModel from "../Models/ambassador.model.js";
+import adminImagesModel from "../Models/adminImages.model.js";
 
 const getAmbassadors = async(req,res) => {
     // res.send("Get Ambassadors Controller is working☑️");
@@ -83,27 +84,57 @@ const sendPhotos = async (req, res) => {
       });
     }
 
-    // Create URLs
-    const fileUrls = files.map((file) => `/uploads/photos/${file.filename}`);
+    const fileUrls = files.map(
+      (file) => `/uploads/photos/${file.filename}`
+    );
 
-    // Save URLs in database for all ambassadors
-    await AmbassadorModel.updateMany({}, {
-      $push: { photos: { $each: fileUrls } }
-    });
+    let imageDoc = await adminImagesModel.findOne();
 
-    res.status(200).json({
+    if (!imageDoc) {
+      imageDoc = await adminImagesModel.create({
+        images: fileUrls, // ✅ MATCH SCHEMA
+      });
+    } else {
+      if (!imageDoc.images) {
+        imageDoc.images = [];
+      }
+
+      imageDoc.images.push(...fileUrls); // ✅ FIXED
+      await imageDoc.save();
+    }
+
+    return res.status(200).json({
       success: true,
-      message: "Promotions sent to all ambassadors",
+      message: "Images appended successfully",
+      totalImages: imageDoc.images.length,
       files: fileUrls,
     });
 
   } catch (error) {
     console.error("Promotion Upload Error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Server error",
     });
   }
 };
 
-export default {getAmbassadors, getAmbassadorsById , getApprove, sendPhotos};
+
+const getAdminImages = async(req,res) => {
+  try {
+    const adminImages = await adminImagesModel.find();
+
+    if(!res){
+      res.status(404).json({message: "Images not Found!"});
+    }else{
+      res.status(200).json({adminImages});
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message: "server error"});
+  }
+}
+
+
+
+export default {getAmbassadors, getAmbassadorsById , getApprove, sendPhotos, getAdminImages};

@@ -8,6 +8,7 @@ const router = express.Router();
 router.get("/api/ambassadors/data/get",Ambassadors.getAmbassadors );
 router.get("/api/ambassadors/data/:id",Ambassadors.getAmbassadorsById );
 router.post("/api/ambassadors/send-photos",upload.array("files",10), Ambassadors.sendPhotos);
+router.get("/api/admin/promotion/images", Ambassadors.getAdminImages);
 router.patch("/api/ambassadors/approve/:id", Ambassadors.getApprove);
 
 
