@@ -28,7 +28,7 @@ const allowedOrigins = [
   process.env.DOMAIN,
   "http://localhost:3000",
   "https://code4bharat.vercel.app", // hardcoded as fallback
-  "https://code4bharat.com",
+  "https://www.code4bharat.com",
 ];
 
 
