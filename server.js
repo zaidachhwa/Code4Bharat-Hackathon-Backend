@@ -73,7 +73,7 @@ app.use(ambassadorDashboard);
 
 app.use(ambassadorStep1FormData);
 app.use(ambassadorStep2FormData);
-app.use(ambassadorCouponCodeUsers);
+app.use("/api",ambassadorCouponCodeUsers);
 app.use(imagesOfPromotionAndSeminar);
 app.use(ambassadorSteps);
 app.use(jwtAuth);

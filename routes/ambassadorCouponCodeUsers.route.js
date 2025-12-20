@@ -8,10 +8,10 @@ const router = express.Router();
 
 
 
-router.get("/api/ambassador-coupen-code-users/:ambassador", ambassadorCouponCodeUsers);
+router.get("/ambassador-coupen-code-users/:ambassador", ambassadorCouponCodeUsers);
 
 
-router.get("/api/ambassador-coupen-code-user", ambassadorCouponCodeUser);
+router.get("/ambassador-coupen-code-user", ambassadorCouponCodeUser);
 
 
 export default router;
