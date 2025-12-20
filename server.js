@@ -17,6 +17,9 @@ import imagesOfPromotionAndSeminar from "./routes/imagesOfPromotionAndSeminar.ro
 import registration from "./routes/registration.route.js";
 import ambassadorSteps from "./routes/ambassadorSteps.route.js";
 import jwtAuth from "./routes/jwtAuth.route.js";
+import fallback_registration from "./routes/fallbackRegistration.route.js"
+
+
 
 
 dotenv.config();
@@ -79,6 +82,7 @@ app.use(ambassadorSteps);
 app.use(jwtAuth);
 
 app.use("/api", registration);
+app.use("/api",fallback_registration)
 
 app.get("/", (req, res) => {
   res.send("Backend is running☑️");
