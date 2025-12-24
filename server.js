@@ -33,6 +33,7 @@ const allowedOrigins = [
   "https://code4bharat.vercel.app", // hardcoded as fallback
   "https://www.code4bharat.com",
   "https://code4bharat-hackathon-backend.onrender.com",
+  "https://code4bharat.com",
 ];
 
 
