@@ -1,12 +1,12 @@
 import User from "../Models/user.model.js";
 import sendEmail from "../utils/sendEmail.js";
+import axios from "axios";
 
 const userRegister = async (req, res) => {
   try {
     console.log("📥 Incoming Data:", req.body);
 
     const userData = req.body.data;
-
     if (!userData) {
       return res.status(400).json({
         success: false,
@@ -14,57 +14,67 @@ const userRegister = async (req, res) => {
       });
     }
 
-    const { email, username, couponCode } = userData;
+    const { email, username, couponCode, fullName, phone } = userData;
 
-    // Check if user email already exists
-    const emailExists = await User.findOne({ email });
-    if (emailExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Email already registered",
-      });
+    // 1️⃣ Check duplicates
+    if (await User.findOne({ email })) {
+      return res.status(400).json({ success: false, message: "Email already registered" });
     }
 
-    // Check if username exists
-    const usernameExists = await User.findOne({ username });
-    if (usernameExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Username is taken",
-      });
+    if (await User.findOne({ username })) {
+      return res.status(400).json({ success: false, message: "Username is taken" });
     }
 
-    // If coupon code is empty, set null
-    const cleanedData = {
+    // 2️⃣ Save user to MongoDB
+    const newUser = await User.create({
       ...userData,
-      couponCode: couponCode && couponCode.trim() !== "" ? couponCode.trim() : null,
-    };
+      couponCode: couponCode?.trim() || null,
+    });
 
-    // Save user to MongoDB
-    const newUser = await User.create(cleanedData);
-    console.log("✔ User stored successfully");
+    console.log("✔ User stored in MongoDB");
 
-    // Send Welcome Email
+    // 3️⃣ Send user to Fermion (NON-BLOCKING)
+    axios
+      .post(
+        `${process.env.FERMION_API_URL}/api/public/create-new-user`,
+        {
+          data: [
+            {
+              data: {
+                userId: newUser._id.toString(),
+                profileDefaults: {
+                  name: fullName || username,
+                  username,
+                  email,
+                  password: userData.password, 
+                  phoneNumber: phone || undefined,
+                },
+                shouldSendWelcomeEmail: true,
+              },
+            },
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "FERMION-API-KEY": process.env.FERMION_API_KEY,
+          },
+        }
+      )
+      .then(() => console.log("✔ Fermion user created"))
+      .catch((err) =>
+        console.error("❌ Fermion error:", err.response?.data || err.message)
+      );
+
+    // 4️⃣ Send welcome email
     await sendEmail({
       to: email,
       subject: "🎉 Welcome to Code4Bharat Hackathon!",
       html: `
-        <h2>Hey ${userData.fullName} 👋</h2>
-        <p>🎉 Thank you for registering for <strong>Code4Bharat Hackathon</strong>!</p>
-        
-        ${
-          cleanedData.couponCode
-            ? `<p>🎁 You used a referral code: <strong>${cleanedData.couponCode}</strong></p>`
-            : ""
-        }
-
-        <p>We’ll share updates soon — stay tuned!</p>
-        <br/>
-        <p>🚀 Regards,<br>Team Code4Bharat</p>
+        <h2>Hey ${fullName} 🥰</h2>
+        <p>Thank you for registering for Code4Bharat Hackathon.</p>
       `,
     });
-
-    console.log("📧 Welcome Email Sent");
 
     return res.status(201).json({
       success: true,
@@ -77,7 +87,6 @@ const userRegister = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Something went wrong",
-      error: error.message,
     });
   }
 };

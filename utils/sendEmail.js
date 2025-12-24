@@ -11,7 +11,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
     });
 
     await transporter.sendMail({
-      from: `"InnovateX Team" <${process.env.EMAIL_USER}>`,
+      from: `"Code4Bharat Team" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,
