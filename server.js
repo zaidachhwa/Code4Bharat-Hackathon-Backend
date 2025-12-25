@@ -28,11 +28,10 @@ const app = express();
 connectDB();
 
 const allowedOrigins = [
-  process.env.DOMAIN,
+
   "http://localhost:3000",
   "https://code4bharat.vercel.app", // hardcoded as fallback
   "https://www.code4bharat.com",
-  "https://code4bharat-hackathon-backend.onrender.com",
   "https://code4bharat.com",
 ];
 
@@ -90,7 +89,7 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5002;
-console.log(PORT);
+// console.log(PORT);
 app.listen(PORT, () => {
   console.log(`Server is running at PORT: http://localhost:${PORT}`);
 });
