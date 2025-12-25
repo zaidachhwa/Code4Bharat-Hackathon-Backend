@@ -18,11 +18,15 @@ const userRegister = async (req, res) => {
 
     // 1️⃣ Check duplicates
     if (await User.findOne({ email })) {
-      return res.status(400).json({ success: false, message: "Email already registered" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already registered" });
     }
 
     if (await User.findOne({ username })) {
-      return res.status(400).json({ success: false, message: "Username is taken" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Username is taken" });
     }
 
     // 2️⃣ Save user to MongoDB
@@ -33,7 +37,18 @@ const userRegister = async (req, res) => {
 
     console.log("✔ User stored in MongoDB");
 
-    // 3️⃣ Send user to Fermion (NON-BLOCKING)
+    // ✅ SEND RESPONSE IMMEDIATELY
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      data: newUser,
+    });
+
+    // ===============================
+    // 🔻 BACKGROUND TASKS (NON-BLOCKING)
+    // ===============================
+
+    // 3️⃣ Send user to Fermion
     axios
       .post(
         `${process.env.FERMION_API_URL}/api/public/create-new-user`,
@@ -46,7 +61,7 @@ const userRegister = async (req, res) => {
                   name: fullName || username,
                   username,
                   email,
-                  password: userData.password, 
+                  password: userData.password,
                   phoneNumber: phone || undefined,
                 },
                 shouldSendWelcomeEmail: true,
@@ -66,21 +81,17 @@ const userRegister = async (req, res) => {
         console.error("❌ Fermion error:", err.response?.data || err.message)
       );
 
-    // 4️⃣ Send welcome email
-    await sendEmail({
+    // 4️⃣ Send welcome email (NO await)
+    sendEmail({
       to: email,
       subject: "🎉 Welcome to Code4Bharat Hackathon!",
       html: `
-        <h2>Hey ${fullName} 🥰</h2>
+        <h2>Hey ${fullName} 🥰🤩</h2>
         <p>Thank you for registering for Code4Bharat Hackathon.</p>
       `,
-    });
+    }).catch((err) => console.error("❌ Email Error:", err));
 
-    return res.status(201).json({
-      success: true,
-      message: "User registered successfully",
-      data: newUser,
-    });
+    return; // ⛔ stop execution
 
   } catch (error) {
     console.error("❌ Server Error:", error);
