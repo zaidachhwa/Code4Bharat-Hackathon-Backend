@@ -23,6 +23,13 @@ const userRegister = async (req, res) => {
         .json({ success: false, message: "Email already registered" });
     }
 
+    if (await User.findOne({ phone })) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Phone number already registered" });
+    }
+
+
     if (await User.findOne({ username })) {
       return res
         .status(400)
